@@ -68,4 +68,10 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+
+  # Use :ansible or :ansible_local to
+  # select the provisioner of your choice
+  config.vm.provision :ansible_local do |ansible|
+   ansible.playbook = "web.yml"
+ end
 end
