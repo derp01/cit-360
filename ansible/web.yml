@@ -12,39 +12,42 @@
     db_username: curriculum
     db_port: 3306
     service_dir: /usr/share/nginx/{{ service_name }}
+    ansible_ssh_private_key_file: ~/.ssh/cit360.pem
   tasks:
-    - name: set SELinux perm
-      become: yes
-      lineinfile: dest=/etc/selinux/config regexp="^SELINUX=" line="SELINUX=permissive"
+#    - name: set SELinux perm
+#      become: yes
+#      lineinfile: dest=/etc/selinux/config regexp="^SELINUX=" line="SELINUX=permissive"
 
-    - name: second stuff
-      become: yes
-      command: setenforce 0
+#    - name: second stuff
+#      become: yes
+#      command: setenforce 0
 
     - name: Mordor
       yum: name=epel-release update_cache=yes state=present
 
+    - name: pre_valhalla
+      become: yes
+      yum: name=httpd,httpd-tools,apr,apr-util,php state=absent state=absent
+
     - name: Valhalla
       become: yes
-      yum: name=nginx,php,php-fpm,php-ldap,php-mbstring,php-mcrypt,php-mysql,php-phpunit-PHPUnit update_cache=yes state=present
+      yum: name=nginx,php54,php-fpm,php-ldap,php-mbstring,php-mcrypt,php-mysql,php-phpunit-PHPUnit update_cache=yes state=latest
       register: nginx_install
 
     - name: Wessex
       become: yes
       get_url:
         url: https://getcomposer.org/installer
-        dest: /tmp/installer
+        dest: /usr/local/bin/composer
+        mode: 0700
 
     - name: blah
       become: yes
-      shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+      shell: php /usr/local/bin/composer -- --install-dir=/usr/local/bin --filename=composer
 
     - name: Uhtred
       become: yes
       copy: src=web/nginx.conf dest=/etc/nginx/nginx.conf mode=0000
-      register: nginx_conf
-
     - name: Isengard
       become: yes
       template: src=web/vhost.conf.j2 dest=/etc/nginx/conf.d/{{ service_name }}.conf mode=0644
@@ -77,9 +80,9 @@
       become: yes
       unarchive: src=web/{{ service_name }}.tgz dest="{{ service_dir }}" mode=0755
 
-#    - name: Helms Deep
-#      become: yes
-#      lineinfile: dest=/etc/php.d/xdebug.ini regexp="^zend_extension" line="; zend_extension"
+    - name: Helms Deep
+      become: yes
+      lineinfile: dest=/etc/php.d/xdebug.ini regexp="^zend_extension" line="; zend_extension"
 
     - name: Helms Deep_2
       become: yes
