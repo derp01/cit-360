@@ -53,7 +53,7 @@ resource "aws_elb" "bar" {
 
   instances = ["${aws_instance.webserver_b.id}" , "${aws_instance.webserver_c.id}"]
   cross_zone_load_balancing = true
-  idle_timeout = 400
+  #idle_timeout = 400
   connection_draining = true
   connection_draining_timeout = 60
 
