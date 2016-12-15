@@ -26,6 +26,13 @@
       become: yes
       yum: name=nginx update_cache=yes state=present
       register: nginx_install
+   
+   - name: Wessex
+      become: yes
+      get_url:
+        url: https://getcomposer.org/installer
+        dest: /usr/local/bin/composer
+        mode: 0700
 
     - name: Composer installation
       become: yes
